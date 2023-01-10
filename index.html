@@ -1,0 +1,66 @@
+
+      <!DOCTYPE html>
+<html>
+  <head>
+    <title>MMMC/ViewDefinition</title>
+    <link rel="stylesheet" href="css/drv_recomm.css">
+    <style>
+      table,
+      th,
+      td {
+        padding: 10px;
+        border: 1px solid black;
+        border-collapse: collapse;
+      }
+    </style>
+
+  </head>
+
+  <body>
+<div class="a"><b>MMMC</b></div>
+</br>
+  </br>
+</br>
+
+# From viewDefinition.tcl</br>
+create_library_set -name LS_bc\</br>
+   -timing\</br>
+    [list ./fast.lib ./ecsm.lib ./pso_ring.lib]</br></br>
+
+create_library_set -name LS_wc\</br>
+   -timing\</br>
+    [list ./slow.lib ./ecsm.lib ./pso_ring.lib]</br></br>
+
+
+create_rc_corner -name RC_bc_0\</br>
+   -T 0\</br>
+   -qx_tech_file ./gpdk090_9l.tch</br>
+
+create_rc_corner -name RC_wc_125\</br>
+   -T 125\</br>
+   -qx_tech_file ./gpdk090_9l.tch</br>
+
+create_op_cond -name OC_wc -library_file fast.lib -P 1 -V 3.9 -T 125</br></br>
+
+
+create_delay_corner -name DC_wc\</br>
+   -rc_corner RC_wc_125\</br>
+   -library_set LS_wc -opcond OC_wc</br></br>
+
+
+
+# define constraints
+
+create_constraint_mode -name PM_on\</br>
+   -sdc_files\</br>
+    [list ./base.sdc_peak]</br></br>
+
+# define views
+create_analysis_view -name AV_wc_on  -constraint_mode PM_on  -delay_corner DC_wc</br>
+
+# active views
+set_analysis_view -setup [list AV_wc_on ] -hold [list AV_wc_on ]</br>
+
+
+  </body>
+</html>
